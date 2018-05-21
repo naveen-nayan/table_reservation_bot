@@ -8,7 +8,6 @@ import commands as cm
 class DATAUPDATE:
 
     def __init__(self):
-        # Device id path
         self.__dbURL = "https://table-reservation-bot.firebaseio.com"
         self.__node = "Hotel Galaxy Internation"
 
@@ -21,6 +20,12 @@ class DATAUPDATE:
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
         result = firebase.patch(self.__node, js)
         pass
+
+    def check_chat_status(self, node):
+        firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
+        status = firebase.get(self.__node, str(node))
+        print status
+        return status
 
     def check_status(self):
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
