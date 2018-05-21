@@ -23,7 +23,7 @@ class DATAUPDATE:
 
     def check_chat_status(self, node):
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
-        status = firebase.get(self.__node, str(node))
+        status = firebase.get(self.__node + "/"+ str(node), None)
         print status
         return status
 
@@ -32,7 +32,6 @@ class DATAUPDATE:
         status = firebase.get(self.__node, None)
         print status
         return status
-
 
 
 def main():

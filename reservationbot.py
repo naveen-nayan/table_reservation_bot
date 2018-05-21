@@ -29,30 +29,41 @@ def handle(msg):
     chat_id = msg['chat']['id']
     print chat_id
     command = msg['text']
-
     print 'Got command: %s' % command
+    js = obj2.check_chat_status(str(chat_id))
     if str(command) == "/start":
         bot.sendMessage(chat_id, str(start_msg()))
         bot.sendMessage(chat_id, "Send us your name")
-        js = {str(chat_id): "Send us your name"}
+        js = {str(chat_id): {"status": "Send us your name"}}
         obj2.update_chat_status(js=js)
 
-    # if  old_msg == get_name:
-    #     name = msg['text']
-    #     bot.sendMessage(chat_id, "Send us your email")
-    #     old_msg = "Send us your email"
-    # if old_msg == get_mail:
-    #     email = msg['text']
-    #     bot.sendMessage(chat_id, "enter number of people")
-    #     old_msg = "enter number of people"
-    # if old_msg == get_count:
-    #     no_of_people = msg['text']
-    #     bot.sendMessage(chat_id, "Booking confirmed")
-    #     to = 'nayansoex@gmail.com,'+ email
-    #     subject = "Booking confirmed"
-    #     text = "Hi {0} your booking for {1} is confirmed".format(str(name), str(no_of_people))
-    #     obj1.send_text_email(to=to, subject=subject, text=text)
+    elif js.get("status", "None") == "Send us your name":
+        bot.sendMessage(chat_id, "Send us your mail")
+        new_js = {str(chat_id): {"status": "Send us your mail", "name" : str(command)}}
+        obj2.update_chat_status(js=new_js)
 
+    elif js.get("status", "None") == "Send us your mail":
+        bot.sendMessage(chat_id, "Send us number of people")
+        name = js.get("name", "None")
+        new_js = {str(chat_id): {"status": "Send us no of people", "email" : str(command), "name" : str(name)}}
+        obj2.update_chat_status(js=new_js)
+
+    elif js.get("status", "None") == "Send us no of people":
+        bot.sendMessage(chat_id, "Confirm with yes")
+        name = js.get("name", "None")
+        emai = js.get("email", "None")
+        new_js = {str(chat_id): {"status": "Confirmation", "email": str(emai), "name": str(name), "No of people": str(command)}}
+        obj2.update_chat_status(js=new_js)
+
+    elif js.get("status", "None") == "Confirmation":
+        if str(command).lower() == "yes":
+            bot.sendMessage(chat_id, "Booking Confirmed")
+            to = js.get("email", "None")
+            name = js.get("name", "None")
+            no_of_people = js.get("No of people", "None")
+            subject = "Booking Confirmation"
+            text = "Hi {0} your booking for {1} is confirmed".format(name, no_of_people)
+            obj1.send_text_email( to=to, subject=subject, text=text)
 
     if str(command) == "/help":
         bot.sendMessage(chat_id, str(help_msg()))
@@ -62,4 +73,4 @@ MessageLoop(bot, handle).run_as_thread()
 print 'I am listening...'
 
 while 1:
-     time.sleep(10)
+     time.sleep(2)
