@@ -17,12 +17,18 @@ class DATAUPDATE:
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
         result = firebase.patch(self.__node, js)
 
+    def update_chat_status(self, js):
+        firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
+        result = firebase.patch(self.__node, js)
+        pass
 
     def check_status(self):
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
         status = firebase.get(self.__node, None)
         print status
         return status
+
+
 
 def main():
     odj = DATAUPDATE()
