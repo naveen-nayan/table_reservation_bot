@@ -33,3 +33,11 @@ class SENDMAIL:
             print ('successfully sent the mail to : ', TO)
         except Exception as e:
             print ("failed to send mail", e)
+
+
+def main():
+    odj = SENDMAIL()
+    odj.send_text_email()
+
+if __name__ == "__main__":
+    main()
