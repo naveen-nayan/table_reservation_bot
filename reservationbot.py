@@ -29,6 +29,9 @@ def handle(msg):
     if str(command) == "/help":
         bot.sendMessage(chat_id, str(help_msg()))
         return
+    else:
+        pass
+
     # if /cancel
     if str(command) == "/cancel":
         js = obj2.check_chat_status(str(chat_id))
@@ -52,6 +55,8 @@ def handle(msg):
         else:
             bot.sendMessage(chat_id, "No Booking from your id")
         return
+    else:
+        pass
 
     js = obj2.check_chat_status(str(chat_id))
     # start booking
@@ -119,6 +124,8 @@ def handle(msg):
             obj1.send_text_email( to=to, subject=subject, text=text)
         else:
             bot.sendMessage(chat_id, "Wrong Input\nConfirm with yes")
+    else:
+        pass
 
 
 MessageLoop(bot, handle).run_as_thread()
