@@ -62,6 +62,7 @@ class DATAUPDATE:
         firebase = fb.FirebaseApplication(self.__dbURL, authentication=None)
         result = firebase.patch(self.__node, js)
 
+
 def main():
     odj = DATAUPDATE()
     # js = odj.check_status()

@@ -1,3 +1,0 @@
-
-
-def take_name():

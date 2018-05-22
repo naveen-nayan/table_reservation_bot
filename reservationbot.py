@@ -18,7 +18,7 @@ def start_msg():
     return welcome_message
 
 def help_msg():
-    return "enter /start to start booking"
+    return "enter /start to start booking\nenter /cancel to cancel booking"
 
 def handle(msg):
     print msg
@@ -29,6 +29,30 @@ def handle(msg):
     if str(command) == "/help":
         bot.sendMessage(chat_id, str(help_msg()))
         return
+    # if /cancel
+    if str(command) == "/cancel":
+        js = obj2.check_chat_status(str(chat_id))
+        table_no = js.get("Table No", "None")
+        if table_no != "None":
+            to = js.get("email", "None")
+            name = js.get("name", "None")
+            table_no = js.get("Table No", "None")
+            subject = "Booking Canceled"
+            new_table_js = {"Available": "yes"}
+            table_js, total, available, booked, booked_table, available_table = obj2.check_table_status()
+            table_js[str(table_no)] = new_table_js
+            print table_js
+            obj2.update_table_status(table_js)
+            text = "Receipt: \n\nName: {0}\nEmail: {1}\nTable Number: {2}\nCancled: {3}".format(
+                name, to, table_no,  "yes")
+            bot.sendMessage(chat_id, text)
+            obj1.send_text_email(to=to, subject=subject, text=text)
+            new_js = {str(chat_id): {"status": "Booking Canceled"}}
+            obj2.update_chat_status(js=new_js)
+        else:
+            bot.sendMessage(chat_id, "No Booking from your id")
+        return
+
     js = obj2.check_chat_status(str(chat_id))
     # start booking
     if str(command) == "/start":
@@ -53,7 +77,7 @@ def handle(msg):
                 new_js = {str(chat_id): {"status": "We are full", "email": str(command), "name": str(name)}}
                 obj2.update_chat_status(js=new_js)
                 return
-            msg = "Our Status:\nWe have Total {0} table \nTotal Available Table : {1} \nAvailable Table Numbe :{2}".format(str(total), str(available), str(available_table_no))
+            msg = "Our Status:\nWe have Total {0} table \nTotal Available Table : {1} \nAvailable Table Number :{2}".format(str(total), str(len(available_table)), str(available_table_no))
             bot.sendMessage(chat_id, msg)
             bot.sendMessage(chat_id, "Send us Table No")
             new_js = {str(chat_id): {"status": "Send us Table No", "email" : str(command), "name" : str(name)}}
@@ -88,8 +112,6 @@ def handle(msg):
             new_table_js = {"Available": "no", "mail": to, "name": name, "Confirmed": "yes", "Booking No": str(booking_no)}
             table_js, total, available, booked, booked_table, available_table = obj2.check_table_status()
             table_js[str(table_no)] = new_table_js
-            table_js["Available"] = str((int(total)-int(booked)) - 1)
-            table_js["Booked"] = str((int(total) - int(available)) + 1)
             print table_js
             obj2.update_table_status(table_js)
             text = "Receipt: \n\nName: {0}\nEmail: {1}\nTable Number: {2}\nBooking Number: {3}\nConfirmed: {4}".format(name, to, table_no, booking_no, "yes")
@@ -97,7 +119,6 @@ def handle(msg):
             obj1.send_text_email( to=to, subject=subject, text=text)
         else:
             bot.sendMessage(chat_id, "Wrong Input\nConfirm with yes")
-    # print for help input
 
 
 MessageLoop(bot, handle).run_as_thread()
